@@ -3,11 +3,14 @@ import java.util.Arrays;
 public class App {
     public static void main(String[] args) throws InterruptedException {
         int length = 5;
+        int capacity = 3;
+        int interval = 6;
+
         Thread[] producerThreads = new Thread[length];
         Thread[] consumerThreads = new Thread[length];
 
         for (int i = 0; i < length; i++) {
-            var c = new ProducerConsumer(12);
+            var c = new ProducerConsumer(interval, capacity);
             producerThreads[i] = new Thread(() -> {
                 try {
                     c.produce();

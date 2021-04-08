@@ -5,14 +5,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ProducerConsumer {
     ConcurrentLinkedQueue<String> stringQueue = new ConcurrentLinkedQueue<>();
     private final int interval;
-    private boolean isStopped = false;
+    private final int capacity;
 
-    public ProducerConsumer(int interval) {
+    public ProducerConsumer(int interval, int capacity) {
         this.interval = interval;
+        this.capacity = capacity;
     }
 
     public synchronized void produce() throws InterruptedException {
-        while (!isStopped) {
+        while (true) {
+            if (stringQueue.size() > capacity){
+                wait();
+            }
             stringQueue.add(generateRandomString());
             notify();
             wait(interval * 1000L);
@@ -20,7 +24,7 @@ public class ProducerConsumer {
     }
 
     public synchronized void consume() throws InterruptedException {
-        while (!isStopped) {
+        while (true) {
             if (stringQueue.isEmpty()) {
                 wait();
             }
@@ -40,13 +44,5 @@ public class ProducerConsumer {
             array[i] += 'a';
         }
         return new String(array, StandardCharsets.UTF_8);
-    }
-
-    public void stop() {
-        isStopped = true;
-    }
-
-    public boolean isStopped() {
-        return isStopped;
     }
 }
